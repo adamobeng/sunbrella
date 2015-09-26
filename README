@@ -1,0 +1,4 @@
+1a. Copy `example_config.yaml` to the same directory as sunbrella.py, with the name `config.yaml`.
+1b. Or copy it to `~/.sunbrella.yaml`.
+2. Put your forecast API key in the config file, and modify the other settings if applicable.
+3. Run ./sunbrella.py (or include it in your prompt)
