@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 import urllib2
 import json
 import yaml
@@ -8,6 +10,8 @@ from pytz import reference
 
 CACHE_PATH = expanduser('~/.sunbrella_cache.json')
 
+def pntime(time):
+    return datetime.datetime.fromtimestamp(time, tz=reference.LocalTimezone())
 
 def get_cache(api_key, latitude, longitude):
     if isfile(CACHE_PATH):
@@ -46,4 +50,46 @@ if __name__ == '__main__':
         config = yaml.load(open('.sunbrella.yaml'))
     else:
         raise Exception('No config file found')
-    data, headers = get_weather(**config)
+    data, headers = get_weather(api_key=config['api_key'], latitude=config['latitude'], longitude=config['longitude'])
+
+    precipitation_tolerance = config.get('precipitation_tolerance') or 0.002
+    temperature_low_tolerance = config.get('temperature_low_tolerance') or 60
+    temperature_high_tolerance = config.get('temperature_high_tolerance') or 72
+    lookahead= config.get('lookahead') or 60
+
+
+    now = datetime.datetime.now(tz=reference.LocalTimezone())
+    points = [data['currently']] + data['minutely']['data'] + data['hourly']['data'] # + data['daily']['data']
+    soon_points = [p for p in points if pntime(p['time']) < (now + datetime.timedelta(minutes=lookahead))]
+
+    tolerance_violations = []
+    for d in soon_points:
+        if d['precipProbability'] >0 and d['precipIntensity'] > precipitation_tolerance:
+            tolerance_violations.append(
+                    (pntime(d['time']), 'precipitation', (d['precipProbability'], d['precipIntensity']))
+            )
+        if 'temperature' in d and d['apparentTemperature'] < temperature_low_tolerance:
+            tolerance_violations.append(
+                    (pntime(d['time']), 'temperature low', (d['apparentTemperature']))
+            )
+        if 'temperature' in d and d['apparentTemperature'] > temperature_high_tolerance:
+            tolerance_violations.append(
+                    (pntime(d['time']), 'temperature high', (d['apparentTemperature']))
+            )
+
+    icons = {
+            'precipitation':'☔️ ',
+            'temperature high': '😎 ',
+            'temperature low': '⛄️ ',
+            }
+
+    displayed = []
+    string = ''
+    for time, tolerance, level in tolerance_violations:
+        if tolerance not in displayed:
+            to = max(0, (time-now).total_seconds())
+            hours = int(round(to/3660, 0))
+            string+=icons[tolerance]
+            string += str(hours)
+            displayed.append(tolerance)
+    print string
