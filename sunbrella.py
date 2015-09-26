@@ -46,8 +46,8 @@ def get_weather(api_key, latitude, longitude, cache_expiry=None):
 if __name__ == '__main__':
     if isfile('config.yaml'):
         config = yaml.load(open('config.yaml'))
-    elif isfile('.sunbrella.yaml'):
-        config = yaml.load(open('.sunbrella.yaml'))
+    elif isfile(expanduser('~/.sunbrella.yaml')):
+        config = yaml.load(open(expanduser('~/.sunbrella.yaml')))
     else:
         raise Exception('No config file found')
     data, headers = get_weather(api_key=config['api_key'], latitude=config['latitude'], longitude=config['longitude'])
