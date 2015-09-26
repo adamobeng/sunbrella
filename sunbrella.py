@@ -91,4 +91,7 @@ if __name__ == '__main__':
             string+=icons[tolerance]
             string += str(hours)
             displayed.append(tolerance)
-    print string
+    if len(string) == 0:
+        print '👌 '
+    else:
+        print string
