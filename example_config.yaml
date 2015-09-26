@@ -1,0 +1,10 @@
+#  Required
+api_key: 'Get one from https://developer.forecast.io/'-
+latitude: 40.71278
+longitude: -74.00594
+
+#  Optional
+precipitation_tolerance: 0.002
+temperature_low_tolerance: 100
+temperature_high_tolerance: 72
+lookahead: 3600
