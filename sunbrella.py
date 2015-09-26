@@ -22,8 +22,6 @@ def get_cache(api_key, latitude, longitude):
             return None, None
         data = cache['data']
         headers = cache['headers']
-        ####
-        return data, headers
         if latitude == data['latitude'] and longitude == data['longitude']:
             now = datetime.datetime.now(tz=reference.LocalTimezone())
             if now < parser.parse(headers['expires']):
