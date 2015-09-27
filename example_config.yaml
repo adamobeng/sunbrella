@@ -5,6 +5,6 @@ longitude: -74.00594
 
 #  Optional
 precipitation_tolerance: 0.002
-temperature_low_tolerance: 100
+temperature_low_tolerance: 60
 temperature_high_tolerance: 72
-lookahead: 3600
+lookahead: 60
